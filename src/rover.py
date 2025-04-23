@@ -1,9 +1,8 @@
 from dataclasses import dataclass
-
-from src.coordinate import Coordinate
-from src.orientation import Orientation
-from src.plateau import Plateau
-
+from coordinate import Coordinate
+from exceptions import ObstacleDetectedException
+from orientation import Orientation
+from plateau import Plateau
 
 @dataclass
 class Rover:
@@ -12,21 +11,19 @@ class Rover:
     orientation: Orientation
 
     def move(self):
-        x, y = self.coordinate.x, self.coordinate.y
-
         match self.orientation:
             case Orientation.NORTH:
-                if y < self.plateau.max_y:
-                    self.coordinate = Coordinate.of(x, y + 1)
+                if self.coordinate.y < self.plateau.max_y:
+                    self.set_new_coordinate(Coordinate.of(self.coordinate.x, self.coordinate.y + 1))
             case Orientation.SOUTH:
-                if y > 0:
-                    self.coordinate = Coordinate.of(x, y - 1)
+                if self.coordinate.y > 0:
+                    self.set_new_coordinate(Coordinate.of(self.coordinate.x, self.coordinate.y - 1))
             case Orientation.EAST:
-                if x < self.plateau.max_x:
-                    self.coordinate = Coordinate.of(x + 1, y)
+                if self.coordinate.x < self.plateau.max_x:
+                    self.set_new_coordinate(Coordinate.of(self.coordinate.x + 1, self.coordinate.y))
             case Orientation.WEST:
-                if x > 0:
-                    self.coordinate = Coordinate.of(x - 1, y)
+                if self.coordinate.x > 0:
+                    self.set_new_coordinate(Coordinate.of(self.coordinate.x - 1, self.coordinate.y))
 
     def turn_left(self):
         match self.orientation:
@@ -49,3 +46,8 @@ class Rover:
                 self.orientation = Orientation.WEST
             case Orientation.WEST:
                 self.orientation = Orientation.NORTH
+
+    def set_new_coordinate(self, next_coordinate: Coordinate):
+        if self.plateau.has_obstacle_at(next_coordinate):
+            raise ObstacleDetectedException(f"An obstacle has been detected at the {next_coordinate}")
+        self.coordinate = next_coordinate

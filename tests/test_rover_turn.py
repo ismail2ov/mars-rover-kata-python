@@ -1,9 +1,9 @@
 import pytest
 
-from src.coordinate import Coordinate
-from src.orientation import Orientation
-from src.plateau import Plateau
-from src.rover import Rover
+from coordinate import Coordinate
+from orientation import Orientation
+from plateau import Plateau
+from rover import Rover
 
 plateau = Plateau(5, 5)
 coordinate = Coordinate.of(0, 0)

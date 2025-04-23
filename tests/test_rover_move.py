@@ -1,9 +1,9 @@
 import pytest
 
-from src.coordinate import Coordinate
-from src.orientation import Orientation
-from src.plateau import Plateau
-from src.rover import Rover
+from coordinate import Coordinate
+from orientation import Orientation
+from plateau import Plateau
+from rover import Rover
 
 MIN_X = 0
 MIN_Y = 0
