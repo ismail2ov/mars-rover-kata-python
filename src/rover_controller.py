@@ -1,3 +1,4 @@
+from commands import CommandFactory
 from exceptions import ObstacleDetectedException
 
 
@@ -6,18 +7,11 @@ class RoverController:
         self.rover = rover
 
     def run(self, commands):
+        command_factory = CommandFactory()
         try:
-            for c in commands:
-                match c:
-                    case "M":
-                        self.rover = self.rover.move()
-                    case "L":
-                        self.rover = self.rover.turn_left()
-                    case "R":
-                        self.rover = self.rover.turn_right()
-                    case _:
-                        pass
+            for s in commands:
+                self.rover = command_factory.execute(self.rover, s)
         except ObstacleDetectedException as e:
-            print(e)
+            print(str(e))
 
         return self.rover
