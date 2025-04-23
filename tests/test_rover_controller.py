@@ -1,9 +1,8 @@
 import pytest
 
-from orientation import Orientation
 from coordinate import Coordinate
 from plateau import Plateau
-from rover import Rover
+from rover import RoverPositionedNorth, RoverPositionedEast, RoverPositionedWest, RoverPositionedSouth
 from rover_controller import RoverController
 
 
@@ -20,17 +19,16 @@ def plateau_with_obstacles():
     return plateau
 
 @pytest.mark.parametrize("create_rovers", [
-    lambda p, p_obs: (Rover(p, Coordinate.of(1, 2), Orientation.NORTH), "LMLMLMLMM", Rover(p, Coordinate.of(1, 3), Orientation.NORTH)),
-    lambda p, p_obs: (Rover(p, Coordinate.of(3, 3), Orientation.EAST), "MMRMMRMRRM", Rover(p, Coordinate.of(5, 1), Orientation.EAST)),
-    lambda p, p_obs: (Rover(p_obs, Coordinate.of(0, 0), Orientation.NORTH), "MRMMRMMM", Rover(p_obs, Coordinate.of(0, 1), Orientation.EAST)),
-    lambda p, p_obs: (Rover(p_obs, Coordinate.of(0, 0), Orientation.EAST), "MMMLMMMLMMM", Rover(p_obs, Coordinate.of(3, 3), Orientation.WEST)),
-    lambda p, p_obs: (Rover(p_obs, Coordinate.of(0, 0), Orientation.NORTH), "MMMMMMRMMRMLMRMLMRMLMR", Rover(p_obs, Coordinate.of(4, 3), Orientation.SOUTH))
+    lambda p, p_obs: (RoverPositionedNorth(p, Coordinate.of(1, 2)), "LMLMLMLMM", RoverPositionedNorth(p, Coordinate.of(1, 3))),
+    lambda p, p_obs: (RoverPositionedEast(p, Coordinate.of(3, 3)), "MMRMMRMRRM", RoverPositionedEast(p, Coordinate.of(5, 1))),
+    lambda p, p_obs: (RoverPositionedNorth(p_obs, Coordinate.of(0, 0)), "MRMMRMMM", RoverPositionedEast(p_obs, Coordinate.of(0, 1))),
+    lambda p, p_obs: (RoverPositionedEast(p_obs, Coordinate.of(0, 0)), "MMMLMMMLMMM", RoverPositionedWest(p_obs, Coordinate.of(3, 3)) ),
+    lambda p, p_obs: (RoverPositionedNorth(p_obs, Coordinate.of(0, 0)), "MMMMMMRMMRMLMRMLMRMLMR", RoverPositionedSouth(p_obs, Coordinate.of(4, 3)))
 ])
 def test_execute_commands(create_rovers, plateau, plateau_with_obstacles):
-    initial, commands, expected = create_rovers(plateau, plateau_with_obstacles)
-    rover_controller = RoverController(initial)
+    initial_rover, commands, expected_rover = create_rovers(plateau, plateau_with_obstacles)
+    controller = RoverController(initial_rover)
 
-    actual = rover_controller.run(commands)
+    actual = controller.run(commands)
 
-    assert actual.coordinate == expected.coordinate
-    assert actual.orientation == expected.orientation
+    assert actual == expected_rover

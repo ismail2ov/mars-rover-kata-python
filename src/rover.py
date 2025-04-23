@@ -1,4 +1,4 @@
-from dataclasses import dataclass, replace
+from abc import ABC, abstractmethod
 
 from coordinate import Coordinate
 from exceptions import ObstacleDetectedException
@@ -6,60 +6,114 @@ from orientation import Orientation
 from plateau import Plateau
 
 
-@dataclass(frozen=True)
-class Rover:
-    plateau: Plateau
-    coordinate: Coordinate
-    orientation: Orientation
+class Rover(ABC):
+    def __init__(self, plateau: Plateau, coordinate: Coordinate, orientation: Orientation):
+        if plateau.has_obstacle_at(coordinate):
+            raise ObstacleDetectedException(f"An obstacle has been detected at the {coordinate}")
+        self._plateau = plateau
+        self._coordinate = coordinate
+        self._orientation = orientation
+
+    @abstractmethod
+    def move(self):
+        pass
+
+    @abstractmethod
+    def turn_left(self):
+        pass
+
+    @abstractmethod
+    def turn_right(self):
+        pass
+
+    @property
+    def plateau(self):
+        return self._plateau
+
+    @property
+    def coordinate(self):
+        return self._coordinate
+
+    @property
+    def orientation(self):
+        return self._orientation
+
+    def __eq__(self, other):
+        return (
+                isinstance(other, Rover)
+                and self._plateau == other._plateau
+                and self._coordinate == other._coordinate
+                and self._orientation == other._orientation
+        )
+
+
+class RoverPositionedEast(Rover):
+    ORIENTATION = Orientation.EAST
+
+    def __init__(self, plateau, coordinate):
+        super().__init__(plateau, coordinate, self.ORIENTATION)
 
     def move(self):
-        new_coordinate = self.coordinate
+        if self.coordinate.x < self.plateau.max_x:
+            return RoverPositionedEast(self.plateau, Coordinate.of(self.coordinate.x + 1, self.coordinate.y))
+        return self
 
-        match self.orientation:
-            case Orientation.NORTH:
-                if self.coordinate.y < self.plateau.max_y:
-                    new_coordinate = self._get_valid_coordinate(
-                        Coordinate.of(self.coordinate.x, self.coordinate.y + 1)
-                    )
-            case Orientation.SOUTH:
-                if self.coordinate.y > 0:
-                    new_coordinate = self._get_valid_coordinate(
-                        Coordinate.of(self.coordinate.x, self.coordinate.y - 1)
-                    )
-            case Orientation.EAST:
-                if self.coordinate.x < self.plateau.max_x:
-                    new_coordinate = self._get_valid_coordinate(
-                        Coordinate.of(self.coordinate.x + 1, self.coordinate.y)
-                    )
-            case Orientation.WEST:
-                if self.coordinate.x > 0:
-                    new_coordinate = self._get_valid_coordinate(
-                        Coordinate.of(self.coordinate.x - 1, self.coordinate.y)
-                    )
+    def turn_left(self):
+        return RoverPositionedNorth(self.plateau, self.coordinate)
 
-        return replace(self, coordinate=new_coordinate)
+    def turn_right(self):
+        return RoverPositionedSouth(self.plateau, self.coordinate)
 
-    def turn_left(self) -> "Rover":
-        new_orientation = {
-            Orientation.NORTH: Orientation.WEST,
-            Orientation.WEST: Orientation.SOUTH,
-            Orientation.SOUTH: Orientation.EAST,
-            Orientation.EAST: Orientation.NORTH
-        }[self.orientation]
 
-        return replace(self, orientation=new_orientation)
+class RoverPositionedNorth(Rover):
+    ORIENTATION = Orientation.NORTH
 
-    def turn_right(self) -> "Rover":
-        new_orientation = {
-            Orientation.NORTH: Orientation.EAST,
-            Orientation.EAST: Orientation.SOUTH,
-            Orientation.SOUTH: Orientation.WEST,
-            Orientation.WEST: Orientation.NORTH
-        }[self.orientation]
+    def __init__(self, plateau, coordinate):
+        super().__init__(plateau, coordinate, self.ORIENTATION)
 
-        return replace(self, orientation=new_orientation)
+    def move(self):
+        if self.coordinate.y < self.plateau.max_y:
+            return RoverPositionedNorth(self.plateau, Coordinate.of(self.coordinate.x, self.coordinate.y + 1))
+        return self
 
-    def _get_valid_coordinate(self, next_coordinate: Coordinate) -> Coordinate:
-        if self.plateau.has_obstacle_at(next_coordinate):
-            raise ObstacleDetectedException(f"An obstacle has been detected at {next_coordinate}")
-        return next_coordinate
+    def turn_left(self):
+        return RoverPositionedWest(self.plateau, self.coordinate)
+
+    def turn_right(self):
+        return RoverPositionedEast(self.plateau, self.coordinate)
+
+
+class RoverPositionedSouth(Rover):
+    ORIENTATION = Orientation.SOUTH
+
+    def __init__(self, plateau, coordinate):
+        super().__init__(plateau, coordinate, self.ORIENTATION)
+
+    def move(self):
+        if self.coordinate.y > 0:
+            return RoverPositionedSouth(self.plateau, Coordinate.of(self.coordinate.x, self.coordinate.y - 1))
+        return self
+
+    def turn_left(self):
+        return RoverPositionedEast(self.plateau, self.coordinate)
+
+    def turn_right(self):
+        return RoverPositionedWest(self.plateau, self.coordinate)
+
+
+class RoverPositionedWest(Rover):
+    ORIENTATION = Orientation.WEST
+
+    def __init__(self, plateau, coordinate):
+        super().__init__(plateau, coordinate, self.ORIENTATION)
+
+    def move(self):
+        if self.coordinate.x > 0:
+            return RoverPositionedWest(self.plateau, Coordinate.of(self.coordinate.x - 1, self.coordinate.y))
+        return self
+
+    def turn_left(self):
+        return RoverPositionedSouth(self.plateau, self.coordinate)
+
+    def turn_right(self):
+        return RoverPositionedNorth(self.plateau, self.coordinate)
