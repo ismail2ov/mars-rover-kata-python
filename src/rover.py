@@ -38,3 +38,14 @@ class Rover:
                 self.orientation = Orientation.NORTH
             case Orientation.WEST:
                 self.orientation = Orientation.SOUTH
+
+    def turn_right(self):
+        match self.orientation:
+            case Orientation.NORTH:
+                self.orientation = Orientation.EAST
+            case Orientation.EAST:
+                self.orientation = Orientation.SOUTH
+            case Orientation.SOUTH:
+                self.orientation = Orientation.WEST
+            case Orientation.WEST:
+                self.orientation = Orientation.NORTH

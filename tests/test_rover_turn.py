@@ -23,3 +23,21 @@ def test_turn_left(initial, expected):
     rover.turn_left()
 
     assert rover.orientation == expected
+
+@pytest.mark.parametrize(
+    "initial, expected",
+    [
+        (Orientation.NORTH, Orientation.EAST),
+        (Orientation.WEST, Orientation.NORTH),
+        (Orientation.SOUTH, Orientation.WEST),
+        (Orientation.EAST, Orientation.SOUTH),
+    ]
+)
+def test_turn_right(initial, expected):
+    plateau = Plateau(5, 5)
+    coordinate = Coordinate.of(0, 0)
+    rover = Rover(plateau, coordinate, initial)
+
+    rover.turn_right()
+
+    assert rover.orientation == expected
