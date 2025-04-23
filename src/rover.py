@@ -9,7 +9,21 @@ from src.plateau import Plateau
 class Rover:
     plateau: Plateau
     coordinate: Coordinate
-    orientation: Orientation.NORTH
+    orientation: Orientation
 
     def move(self):
-        self.coordinate = Coordinate(self.coordinate.x, self.coordinate.y + 1)
+        x, y = self.coordinate.x, self.coordinate.y
+
+        match self.orientation:
+            case Orientation.NORTH:
+                if y < self.plateau.max_y:
+                    self.coordinate = Coordinate.of(x, y + 1)
+            case Orientation.SOUTH:
+                if y > 0:
+                    self.coordinate = Coordinate.of(x, y - 1)
+            case Orientation.EAST:
+                if x < self.plateau.max_x:
+                    self.coordinate = Coordinate.of(x + 1, y)
+            case Orientation.WEST:
+                if x > 0:
+                    self.coordinate = Coordinate.of(x - 1, y)

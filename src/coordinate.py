@@ -5,3 +5,7 @@ from dataclasses import dataclass
 class Coordinate:
     x: int
     y: int
+
+    @staticmethod
+    def of(x: int, y: int):
+        return Coordinate(x, y)
