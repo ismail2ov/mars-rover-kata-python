@@ -27,3 +27,14 @@ class Rover:
             case Orientation.WEST:
                 if x > 0:
                     self.coordinate = Coordinate.of(x - 1, y)
+
+    def turn_left(self):
+        match self.orientation:
+            case Orientation.NORTH:
+                self.orientation = Orientation.WEST
+            case Orientation.SOUTH:
+                self.orientation = Orientation.EAST
+            case Orientation.EAST:
+                self.orientation = Orientation.NORTH
+            case Orientation.WEST:
+                self.orientation = Orientation.SOUTH
