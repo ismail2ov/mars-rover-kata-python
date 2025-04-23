@@ -37,5 +37,7 @@ plateau = Plateau(MAX_X, MAX_Y)
 )
 def test_rover_should_move_to(initial, orientation, expected):
     rover = Rover(plateau, initial, orientation)
-    rover.move()
-    assert rover.coordinate == expected
+
+    actual = rover.move()
+
+    assert actual.coordinate == expected

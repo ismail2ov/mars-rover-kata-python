@@ -10,12 +10,14 @@ class RoverController:
             for c in commands:
                 match c:
                     case "M":
-                        self.rover.move()
+                        self.rover = self.rover.move()
                     case "L":
-                        self.rover.turn_left()
+                        self.rover = self.rover.turn_left()
                     case "R":
-                        self.rover.turn_right()
+                        self.rover = self.rover.turn_right()
                     case _:
                         pass
         except ObstacleDetectedException as e:
             print(e)
+
+        return self.rover

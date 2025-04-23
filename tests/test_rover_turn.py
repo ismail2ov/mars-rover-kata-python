@@ -20,9 +20,9 @@ coordinate = Coordinate.of(0, 0)
 def test_turn_left(initial, expected):
     rover = Rover(plateau, coordinate, initial)
 
-    rover.turn_left()
+    actual = rover.turn_left()
 
-    assert rover.orientation == expected
+    assert actual.orientation == expected
 
 @pytest.mark.parametrize(
     "initial, expected",
@@ -36,6 +36,6 @@ def test_turn_left(initial, expected):
 def test_turn_right(initial, expected):
     rover = Rover(plateau, coordinate, initial)
 
-    rover.turn_right()
+    actual = rover.turn_right()
 
-    assert rover.orientation == expected
+    assert actual.orientation == expected

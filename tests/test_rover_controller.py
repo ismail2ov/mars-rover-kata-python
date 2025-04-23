@@ -29,7 +29,8 @@ def plateau_with_obstacles():
 def test_execute_commands(create_rovers, plateau, plateau_with_obstacles):
     initial, commands, expected = create_rovers(plateau, plateau_with_obstacles)
     rover_controller = RoverController(initial)
-    rover_controller.run(commands)
 
-    assert initial.coordinate == expected.coordinate
-    assert initial.orientation == expected.orientation
+    actual = rover_controller.run(commands)
+
+    assert actual.coordinate == expected.coordinate
+    assert actual.orientation == expected.orientation
