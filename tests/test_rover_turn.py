@@ -5,6 +5,8 @@ from src.orientation import Orientation
 from src.plateau import Plateau
 from src.rover import Rover
 
+plateau = Plateau(5, 5)
+coordinate = Coordinate.of(0, 0)
 
 @pytest.mark.parametrize(
     "initial, expected",
@@ -16,8 +18,6 @@ from src.rover import Rover
     ]
 )
 def test_turn_left(initial, expected):
-    plateau = Plateau(5, 5)
-    coordinate = Coordinate.of(0, 0)
     rover = Rover(plateau, coordinate, initial)
 
     rover.turn_left()
@@ -34,8 +34,6 @@ def test_turn_left(initial, expected):
     ]
 )
 def test_turn_right(initial, expected):
-    plateau = Plateau(5, 5)
-    coordinate = Coordinate.of(0, 0)
     rover = Rover(plateau, coordinate, initial)
 
     rover.turn_right()
