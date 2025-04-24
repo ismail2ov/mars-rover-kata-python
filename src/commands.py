@@ -21,9 +21,9 @@ class CommandTurnRight(Command):
 
 class CommandFactory:
     def __init__(self):
-        self._init_commands()
+        self.__init_commands()
 
-    def _init_commands(self):
+    def __init_commands(self):
         self.commands: Dict[str, Command] = {
             "M": CommandMove(),
             "L": CommandTurnLeft(),
